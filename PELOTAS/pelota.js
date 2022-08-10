@@ -1,73 +1,134 @@
-/*
- * Practica de poo usando canvas
+/**
+ * Practica de POO usando canvas
  * MLM
  * 2022/08/05
  */
 
-/*
-Cargar Recursos
-*/
-var c= document.getElementById("canvas");
-var ctx=c.getContext("2d");
-/*
- * Valores Iniciales
+/** CARGAR RECURSOS */
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+var pelotas = [];
+var cantidad = 50;
+
+var colores = [
+    'Red',
+    'Cyan',
+    'Blue',
+    'DarkBlue',
+    'LightBlue',
+    'Purple',
+    'Yellow',
+    'lime',
+    'Magenta',
+    'Pink',
+    'Silver',
+    'Black',
+    'Orange',
+    'Brown',
+    'Maroon',
+    'Green',
+    'Olive',
+    'Aquamarine',
+    'Red',
+    'Grey'    
+]
+
+
+/**
+ * DEFINICION DE LA CLASE 
  */
-var centro={x:0, y:0};
-var radio=50;
-var vel={x:6, y:3};
-/*
- * Dibujar mundo
- */
-function dibujar(){
-    ctx.clearRect(0,0,canvas.width,canvas.height)
-    ctx.beginPath();
-    ctx.lineWidth=2;
-    ctx.strokeStyle="blue";
-    ctx.arc(centro.x,centro.y,radio,0,2*Math.PI);
-    ctx.stroke();
+
+ class Pelota{
+    constructor(){
+        this.radio = generarNumero(10, 40);
+        this.centro = {x: generarNumero(this.radio, canvas.width - this.radio), 
+            y: generarNumero(this.radio, canvas.height - this.radio)};
+        this.vel = {x: generarNumero(-5, +5), y:generarNumero(-5, +5)};
+        this.colorBorde = colores[generarNumero(0, colores.length)];
+        this.colorRelleno = colores[generarNumero(0, colores.length)];
+    }
+
+    dibujar(){
+        ctx.beginPath();
+        ctx.lineWidth = 3;
+        ctx.arc(this.centro.x, this.centro.y, this.radio, 0, 2 * Math.PI);
+        ctx.strokeStyle = this.colorBorde;
+        ctx.fillStyle = this.colorBorde;
+        ctx.fill();
+        ctx.stroke();  
+
+    }
+
+    mover(){
+        this.centro.x += this.vel.x;
+        this.centro.y += this.vel.y;
+        // Controlar rebotes 
+        if (this.centro.x + this.radio >= canvas.width || this.centro.x <= this.radio) {
+            this.vel.x *= -1;
+        }
+        if (this.centro.y + this.radio>= canvas.height || this.centro.y <= this.radio) {
+            this.vel.y *= -1;
+        }
+
+    }
 }
-/*
- * Recalcular Valores
+
+
+
+
+/**
+ * FUNCIONES AUXILIARES
+ * 
  */
-function calcular()
-{
-    centro.x+=vel.x;
-    centro.y+=vel.y;  
-    if (centro.x>canvas.width-radio|| centro.x<=0) {
-        vel.x*=-1;
-    }
-    if (centro.y>canvas.height-radio|| centro.x<=0){
-        vel.y*=-1;
-    }
+
+function generarNumero(min, max) {
+    return Math.floor(Math.random() * (max - min) ) + min;
+}
+
+/***************************************************************************
+ * PROGRAMA PRINCIPAL 
+ */
+
+for (let i = 0; i < cantidad; i++) {
+    pelotas.push(new Pelota());
     
 }
-/*
- * Ciclo de animación
- */
-function animar()
-{
 
+var body = document.body;
+var html = document.documentElement;
+
+var h = Math.max( body.scrollHeight, body.offsetHeight, 
+                       html.clientHeight, html.scrollHeight, html.offsetHeight );
+
+var w = Math.max( body.scrollWidth, body.offsetWidth, 
+                        html.clientWidth, html.scrollWidth, html.offsetWidth );
+ 
+canvas.height = h- 40;
+canvas.width = w- 40;
+
+animar();
+
+/** DIBUJAR EL MUNDO */
+function dibujar() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < cantidad; i++) {
+        pelotas[i].dibujar(); 
+    }
+}
+/** CALCULAR VALORES */
+function calcular() {
+
+    for (let i = 0; i < cantidad; i++) {
+        pelotas[i].mover(); 
+    }
+}
+
+/** CICLO DE ANIMACION */
+function animar() {
     dibujar();
     calcular();
     requestAnimationFrame(animar);
 }
-    requestAnimationFrame(animar);
 
-
-
-/*
-*Circulos tomados de W3schools 
-*El 95 es x, 50 es y, 40 es el radio,   
- var c = document.getElementById("canvas");
- var ctx = c.getContext("2d");
- ctx.beginPath();
- ctx.arc(95, 50, 40, 0, 2 * Math.PI);
- ctx.stroke();
-
- var c = document.getElementById("canvas");
- var ctx = c.getContext("2d");
- ctx.beginPath();
- ctx.arc(420, 70, 200, 0, 2 * Math.PI);
- ctx.stroke();
- */
- 
+/********************************************************************* */
